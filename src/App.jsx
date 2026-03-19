@@ -540,6 +540,11 @@ export default function App() {
 
       {/* Right panel — form */}
       <div className="right-panel">
+        {/* Social proof banner */}
+        <div className="social-proof-banner">
+          🔥 47 företag har konfigurerat sin agent den senaste månaden
+        </div>
+
         {/* Mobile header */}
         <header className="mobile-header">
           <a href="https://aikollegorna.se" className="logo">
@@ -578,6 +583,10 @@ export default function App() {
                   <span>🔒 Ingen bindningstid</span>
                   <span>⚡ Igång inom 48h</span>
                   <span>💬 Personlig kontakt</span>
+                </div>
+                <div className="testimonial-card">
+                  <p className="testimonial-quote">"Vi sparade 12 timmar i veckan första månaden."</p>
+                  <p className="testimonial-author">— Marcus, VD Wristbuddys</p>
                 </div>
               </div>
             )}
