@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useFormPersistence } from './useFormPersistence'
+import IndustryBadges from './IndustryBadges'
 import './index.css'
 
 // ─── Constants ──────────────────────────────────────────────
@@ -45,7 +46,7 @@ const PACKAGES = [
 const HOURS_PER_AGENT = 10
 const HOURLY_RATE = 500
 
-const STEP_LABELS = ['Start', 'Företag', 'Syfte', 'Agenter', 'Personlighet', 'Kontakt']
+const STEP_LABELS = ['Start', 'Ditt företag', 'Vad ska AI:n göra?', 'Välj specialister', 'Personlighet', 'Snart klar!']
 const TOTAL_STEPS = 5
 
 // ─── Mac Mini SVG ───────────────────────────────────────────
@@ -185,6 +186,140 @@ const ProgressBar = ({ step }) => {
   )
 }
 
+// ─── Confirmation Screen ────────────────────────────────
+
+const ConfirmationScreen = ({ form }) => {
+  const [countdown, setCountdown] = useState(24 * 60 * 60) // 24h in seconds
+  const [progressPct, setProgressPct] = useState(0)
+
+  useEffect(() => {
+    // Animate progress bar in
+    const pTimer = setTimeout(() => setProgressPct(100), 100)
+
+    const interval = setInterval(() => {
+      setCountdown(c => (c > 0 ? c - 1 : 0))
+    }, 1000)
+
+    return () => {
+      clearInterval(interval)
+      clearTimeout(pTimer)
+    }
+  }, [])
+
+  const formatTime = (s) => {
+    const h = Math.floor(s / 3600)
+    const m = Math.floor((s % 3600) / 60)
+    const sec = s % 60
+    return `${h}h ${m}m ${sec < 10 ? '0' : ''}${sec}s`
+  }
+
+  const savedHours = form.selectedAgents.length * HOURS_PER_AGENT
+  const savedYearly = savedHours * HOURLY_RATE * 52
+
+  const shareSubject = encodeURIComponent('Kolla in AI Kollegorna – AI-agenter för företag')
+  const shareBody = encodeURIComponent(
+    `Hej!\n\nJag har precis konfigurerat en AI-agent via AI Kollegorna. De bygger skräddarsydda AI-medarbetare som jobbar dygnet runt.\n\nKolla in det här: https://aikollegorna.se\n\nMvh`
+  )
+
+  return (
+    <div className="step-content success-step">
+      <div className="success-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </div>
+      <h2>Ansökan mottagen!</h2>
+      <p className="success-desc">
+        Tack, <strong>{form.contactName}</strong>. Anton har fått din ansökan
+        om AI-agenten <strong>{form.agentName}</strong> för <strong>{form.companyName}</strong>.
+      </p>
+
+      {/* Countdown timer */}
+      <div className="countdown-card">
+        <p className="countdown-label">⏱ Anton kontaktar dig inom 24 timmar</p>
+        <div className="countdown-timer">{formatTime(countdown)}</div>
+        <div className="countdown-bar-track">
+          <div
+            className="countdown-bar-fill"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+      </div>
+
+      {/* "Vad händer nu?" cards */}
+      <div className="next-steps-grid">
+        <div className="next-step-card">
+          <span className="next-step-icon">✉️</span>
+          <h4>Bekräftelse via email</h4>
+          <p>Skickat inom 5 min</p>
+        </div>
+        <div className="next-step-card">
+          <span className="next-step-icon">📞</span>
+          <h4>Kostnadsfri demo-call</h4>
+          <p>Bokas inom 24h</p>
+        </div>
+        <div className="next-step-card">
+          <span className="next-step-icon">🖥️</span>
+          <h4>Installation på ert kontor</h4>
+          <p>Inom 1–2 veckor</p>
+        </div>
+      </div>
+
+      <div className="receipt-card">
+        <div className="receipt-header">
+          <span>🤖</span>
+          <h4>Din konfiguration</h4>
+        </div>
+        <div className="receipt-body">
+          <div className="receipt-row"><span>Företag</span><span>{form.companyName}</span></div>
+          <div className="receipt-row"><span>Bransch</span><span>{form.industry}</span></div>
+          <div className="receipt-row"><span>Agent</span><span>{form.agentName}</span></div>
+          <div className="receipt-row"><span>Syfte</span><span>{PURPOSE_LABELS[form.purpose] || form.purpose}</span></div>
+          <div className="receipt-row"><span>Sub-agenter</span><span>{form.selectedAgents.map(id => AGENTS.find(a => a.id === id)?.name).join(', ')}</span></div>
+          <div className="receipt-row"><span>Stil</span><span>{form.commStyle} · {form.language}</span></div>
+          <div className="receipt-row"><span>Kontakt</span><span>{form.contactEmail}</span></div>
+        </div>
+      </div>
+
+      {form.selectedAgents.length > 0 && (() => {
+        return (
+          <div className="roi-card">
+            <div className="roi-header">
+              <span>📊</span>
+              <h4>Uppskattad ROI</h4>
+            </div>
+            <div className="roi-body">
+              <div className="roi-stat">
+                <span className="roi-number">{savedHours}h</span>
+                <span className="roi-label">sparade timmar/vecka</span>
+              </div>
+              <div className="roi-divider" />
+              <div className="roi-stat">
+                <span className="roi-number">{(savedYearly / 1000).toFixed(0)}k kr</span>
+                <span className="roi-label">besparing per år</span>
+              </div>
+            </div>
+            <p className="roi-disclaimer">
+              Med {form.selectedAgents.length} agenter kan du spara uppskattningsvis {savedHours} timmar/vecka och {savedYearly.toLocaleString('sv-SE')} kr/år.
+              Baserat på {HOURS_PER_AGENT}h/agent/vecka och {HOURLY_RATE} kr/h.
+            </p>
+          </div>
+        )
+      })()}
+
+      <div className="confirmation-actions">
+        <a
+          href={`mailto:?subject=${shareSubject}&body=${shareBody}`}
+          className="btn btn-primary share-btn"
+        >
+          📨 Dela med en kollega
+        </a>
+        <a href="https://aikollegorna.se" className="btn btn-secondary">
+          Tillbaka till aikollegorna.se
+        </a>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main App ───────────────────────────────────────────────
 
 const INITIAL_FORM = {
@@ -293,52 +428,43 @@ export default function App() {
 
     const agentNames = form.selectedAgents.map(id => AGENTS.find(a => a.id === id)?.name).join(', ')
     const purposeLabel = PURPOSE_LABELS[form.purpose] || form.purpose
+    const formspreeId = import.meta.env.VITE_FORMSPREE_ID || 'mldnjqzk'
 
-    const body = `
-NY AGENT-ANSÖKAN — AI Kollegorna
-
-FÖRETAG
-Namn: ${form.companyName}
-Bransch: ${form.industry}
-Storlek: ${form.companySize}
-
-AGENTEN
-Namn: ${form.agentName}
-Primärt syfte: ${purposeLabel}${form.purposeCustom ? ` — ${form.purposeCustom}` : ''}
-Kommunikationsstil: ${form.commStyle}
-Språk: ${form.language}
-Aktivitetsnivå: ${form.activityLevel}
-
-VALDA SUB-AGENTER (${form.selectedAgents.length} st)
-${agentNames}
-
-KONTAKT
-Namn: ${form.contactName}
-E-post: ${form.contactEmail}
-Telefon: ${form.contactPhone || '—'}
-Vill ha demo: ${form.wantDemo ? 'Ja' : 'Nej'}
-Vill ha info via mejl: ${form.wantInfo ? 'Ja' : 'Nej'}
-
-ÖVRIGT
-${form.extraInfo || '—'}
-
----
-Skickat via Agent Configurator på aikollegorna.se
-    `.trim()
+    const submissionData = {
+      _subject: `Ny agent-konfiguration från ${form.companyName}`,
+      _replyto: form.contactEmail,
+      _template: 'table',
+      // Företagsinfo
+      'Företagsnamn': form.companyName,
+      'Bransch': form.industry,
+      'Antal anställda': form.companySize,
+      // Agent-konfiguration
+      'Agentnamn': form.agentName,
+      'Primärt syfte': purposeLabel + (form.purposeCustom ? ` — ${form.purposeCustom}` : ''),
+      'Kommunikationsstil': form.commStyle,
+      'Språk': form.language,
+      'Aktivitetsnivå': form.activityLevel,
+      'Valda sub-agenter': agentNames,
+      'Antal sub-agenter': form.selectedAgents.length,
+      // Kontaktuppgifter
+      'Kontaktperson': form.contactName,
+      'E-post': form.contactEmail,
+      'Telefon': form.contactPhone || '—',
+      'Vill ha demo': form.wantDemo ? 'Ja' : 'Nej',
+      'Vill ha info via mejl': form.wantInfo ? 'Ja' : 'Nej',
+      // Övrigt
+      'Övrig information': form.extraInfo || '—',
+      'Skickat från': 'Agent Configurator — aikollegorna.se',
+    }
 
     // Save to localStorage as backup
     saveSubmission(form)
 
     try {
-      const res = await fetch('https://formspree.io/f/mldnjqzk', {
+      const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: form.contactEmail,
-          subject: `Ny agent-ansökan: ${form.companyName} — ${form.agentName}`,
-          message: body,
-          _replyto: form.contactEmail,
-        })
+        body: JSON.stringify(submissionData)
       })
       if (res.ok) {
         setSubmitted(true)
@@ -437,6 +563,7 @@ Skickat via Agent Configurator på aikollegorna.se
                     ))}
                   </select>
                   {errors.industry && <p className="error-text">{errors.industry}</p>}
+                  <IndustryBadges selected={form.industry} onSelect={(val) => update('industry', val)} />
                 </div>
                 <div className="form-group">
                   <label>Antal anställda <span className="required">*</span></label>
@@ -748,74 +875,7 @@ Skickat via Agent Configurator på aikollegorna.se
 
             {/* STEP 99 — Bekräftelse */}
             {step === 99 && (
-              <div className="step-content success-step">
-                <div className="success-icon">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </div>
-                <h2>Ansökan mottagen!</h2>
-                <p className="success-desc">
-                  Tack, <strong>{form.contactName}</strong>. Anton har fått din ansökan
-                  om AI-agenten <strong>{form.agentName}</strong> för <strong>{form.companyName}</strong>.
-                </p>
-
-                <div className="receipt-card">
-                  <div className="receipt-header">
-                    <span>🤖</span>
-                    <h4>Din konfiguration</h4>
-                  </div>
-                  <div className="receipt-body">
-                    <div className="receipt-row"><span>Företag</span><span>{form.companyName}</span></div>
-                    <div className="receipt-row"><span>Bransch</span><span>{form.industry}</span></div>
-                    <div className="receipt-row"><span>Agent</span><span>{form.agentName}</span></div>
-                    <div className="receipt-row"><span>Syfte</span><span>{PURPOSE_LABELS[form.purpose] || form.purpose}</span></div>
-                    <div className="receipt-row"><span>Sub-agenter</span><span>{form.selectedAgents.map(id => AGENTS.find(a => a.id === id)?.name).join(', ')}</span></div>
-                    <div className="receipt-row"><span>Stil</span><span>{form.commStyle} · {form.language}</span></div>
-                    <div className="receipt-row"><span>Kontakt</span><span>{form.contactEmail}</span></div>
-                  </div>
-                </div>
-
-                {form.selectedAgents.length > 0 && (() => {
-                  const savedHours = form.selectedAgents.length * HOURS_PER_AGENT
-                  const savedYearly = savedHours * HOURLY_RATE * 52
-                  return (
-                    <div className="roi-card">
-                      <div className="roi-header">
-                        <span>📊</span>
-                        <h4>Uppskattad ROI</h4>
-                      </div>
-                      <div className="roi-body">
-                        <div className="roi-stat">
-                          <span className="roi-number">{savedHours}h</span>
-                          <span className="roi-label">sparade timmar/vecka</span>
-                        </div>
-                        <div className="roi-divider" />
-                        <div className="roi-stat">
-                          <span className="roi-number">{(savedYearly / 1000).toFixed(0)}k kr</span>
-                          <span className="roi-label">besparing per år</span>
-                        </div>
-                      </div>
-                      <p className="roi-disclaimer">
-                        Med {form.selectedAgents.length} agenter kan du spara uppskattningsvis {savedHours} timmar/vecka och {savedYearly.toLocaleString('sv-SE')} kr/år.
-                        Baserat på {HOURS_PER_AGENT}h/agent/vecka och {HOURLY_RATE} kr/h.
-                      </p>
-                    </div>
-                  )
-                })()}
-
-                <div className="what-happens">
-                  <h4>Vad händer nu?</h4>
-                  <ol>
-                    <li>Anton läser igenom din ansökan och bedömer möjligheten</li>
-                    <li>Du får en personlig återkoppling via e-post till <strong>{form.contactEmail}</strong></li>
-                    <li>Om det passar kör vi ett 30-min intro-samtal utan kostnad</li>
-                    <li>Agenten <strong>{form.agentName}</strong> installeras och sätts i drift</li>
-                  </ol>
-                </div>
-
-                <a href="https://aikollegorna.se" className="btn btn-secondary">
-                  Tillbaka till aikollegorna.se
-                </a>
-              </div>
+              <ConfirmationScreen form={form} />
             )}
           </div>
         </main>

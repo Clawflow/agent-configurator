@@ -1368,3 +1368,180 @@ textarea { resize: vertical; min-height: 100px; }
   .left-panel { width: 460px; min-width: 460px; }
   .step-content { padding: 56px; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   INDUSTRY BADGES (STEP 1)
+   ═══════════════════════════════════════════════════════════ */
+
+.industry-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.industry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 99px;
+  background: white;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink);
+  transition: all 0.2s ease;
+}
+
+.industry-badge:hover {
+  border-color: var(--blue);
+  background: rgba(124,58,237,0.03);
+  transform: translateY(-1px);
+}
+
+.industry-badge.active {
+  border-color: var(--blue);
+  background: var(--blue-light);
+  color: var(--blue-dark);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+.industry-badge-emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COUNTDOWN TIMER (CONFIRMATION)
+   ═══════════════════════════════════════════════════════════ */
+
+.countdown-card {
+  background: linear-gradient(135deg, var(--blue-light), #F3E8FF);
+  border: 1.5px solid rgba(124,58,237,0.15);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.countdown-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--blue-dark);
+  margin-bottom: 12px;
+}
+
+.countdown-timer {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: 0.03em;
+  margin-bottom: 16px;
+}
+
+.countdown-bar-track {
+  height: 6px;
+  background: rgba(124,58,237,0.12);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.countdown-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), #4F46E5);
+  border-radius: 99px;
+  transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: barPulse 2s ease-in-out infinite;
+}
+
+@keyframes barPulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEXT STEPS CARDS (CONFIRMATION)
+   ═══════════════════════════════════════════════════════════ */
+
+.next-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.next-step-card {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.next-step-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.next-step-icon {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.next-step-card h4 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.next-step-card p {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONFIRMATION ACTIONS
+   ═══════════════════════════════════════════════════════════ */
+
+.confirmation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.share-btn {
+  width: 100%;
+  justify-content: center;
+  text-decoration: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — NEW COMPONENTS
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .next-steps-grid {
+    grid-template-columns: 1fr;
+  }
+  .industry-badges {
+    gap: 6px;
+  }
+  .industry-badge {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+  .countdown-timer {
+    font-size: 1.5rem;
+  }
+}
