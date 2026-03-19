@@ -1527,21 +1527,184 @@ textarea { resize: vertical; min-height: 100px; }
 }
 
 /* ═══════════════════════════════════════════════════════════
+   TYPING EFFECT (WELCOME)
+   ═══════════════════════════════════════════════════════════ */
+
+.typing-intro {
+  margin-bottom: 20px;
+  min-height: 1.8em;
+}
+
+.typing-text {
+  font-size: 1.05rem;
+  color: var(--muted);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.typing-cursor {
+  font-weight: 300;
+  color: var(--blue);
+  animation: none;
+}
+
+.typing-cursor.blink {
+  animation: cursorBlinkWelcome 1s step-end infinite;
+}
+
+@keyframes cursorBlinkWelcome {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Welcome illustration with animated glow */
+.welcome-illustration {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.welcome-illustration .macmini-svg {
+  width: 220px;
+  margin: 0 auto;
+  display: block;
+  filter: drop-shadow(0 15px 40px rgba(124,58,237,0.3));
+  animation: macGlow 3s ease-in-out infinite;
+}
+
+@keyframes macGlow {
+  0%, 100% { filter: drop-shadow(0 15px 40px rgba(124,58,237,0.25)); }
+  50%      { filter: drop-shadow(0 20px 60px rgba(124,58,237,0.45)); }
+}
+
+/* Welcome bullets */
+.welcome-bullets {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.welcome-bullet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.bullet-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--green);
+  color: white;
+  border-radius: 99px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INDUSTRY HINT (STEP 2)
+   ═══════════════════════════════════════════════════════════ */
+
+.industry-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border: 1px solid #FDE68A;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  animation: hintFadeIn 0.4s ease;
+}
+
+@keyframes hintFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.industry-hint-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.industry-hint p {
+  font-size: 0.85rem;
+  color: #92400E;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
    RESPONSIVE — NEW COMPONENTS
    ═══════════════════════════════════════════════════════════ */
+
+/* Mobile — general touch-friendly buttons */
+@media (max-width: 1024px) {
+  .btn {
+    min-height: 52px;
+  }
+}
 
 @media (max-width: 640px) {
   .next-steps-grid {
     grid-template-columns: 1fr;
   }
   .industry-badges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 6px;
   }
   .industry-badge {
-    padding: 6px 10px;
+    padding: 8px 10px;
     font-size: 0.75rem;
+    justify-content: center;
   }
   .countdown-timer {
     font-size: 1.5rem;
+  }
+  .welcome-bullets {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .welcome-illustration .macmini-svg {
+    width: 160px;
+  }
+  .typing-text {
+    font-size: 0.92rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+  .progress-text {
+    display: none !important;
+  }
+  .progress-dot {
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+  }
+  .btn {
+    min-height: 52px;
+    font-size: 0.85rem;
+    padding: 12px 16px;
+  }
+  .industry-badge {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
+  .welcome-bullets {
+    gap: 8px;
+  }
+  .welcome-bullet {
+    font-size: 0.8rem;
   }
 }

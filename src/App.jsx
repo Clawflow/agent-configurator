@@ -84,6 +84,51 @@ const MacMiniIllustration = () => (
   </svg>
 )
 
+// ─── Typing Text Effect ─────────────────────────────────────
+
+const TypingText = ({ text, speed = 40 }) => {
+  const [displayed, setDisplayed] = useState('')
+  const [done, setDone] = useState(false)
+
+  useEffect(() => {
+    setDisplayed('')
+    setDone(false)
+    let i = 0
+    const timer = setInterval(() => {
+      i++
+      setDisplayed(text.slice(0, i))
+      if (i >= text.length) {
+        clearInterval(timer)
+        setDone(true)
+      }
+    }, speed)
+    return () => clearInterval(timer)
+  }, [text, speed])
+
+  return (
+    <span className="typing-text">
+      {displayed}
+      <span className={`typing-cursor ${done ? 'blink' : ''}`}>|</span>
+    </span>
+  )
+}
+
+// ─── Industry Hint (Step 2) ─────────────────────────────────
+
+const INDUSTRY_HINTS = {
+  'Fastighet & Mäkleri': 'Fastighetsbolag använder vanligtvis AI för uthyrningsförfrågningar och dokumenthantering',
+  'Redovisning & Bokföring': 'Redovisningsbyråer automatiserar vanligtvis kvittoskanning och kundkommunikation',
+  'E-handel & Retail': 'E-handlare fokuserar på bildoptimering, kundtjänst och orderuppföljning',
+  'Juridik & Advokat': 'Advokatbyråer använder AI för dokumentgranskning, avtalsskrivning och tidsrapportering',
+  'Bygg & Entreprenad': 'Byggbolag automatiserar offertering, projektuppföljning och dokumentation',
+  'Hälsa & Sjukvård': 'Vårdgivare effektiviserar bokningar, patientkommunikation och journalhantering',
+}
+
+const getIndustryHint = (industry) => {
+  if (!industry) return 'De flesta företag börjar med sälj eller administration'
+  return INDUSTRY_HINTS[industry] || 'De flesta företag börjar med sälj eller administration'
+}
+
 // ─── Tooltip Component ──────────────────────────────────────
 
 const Tooltip = ({ text, children }) => {
@@ -513,17 +558,20 @@ export default function App() {
             {/* STEP 0 — Welcome */}
             {step === 0 && (
               <div className="step-content welcome-step">
-                <div className="mobile-illustration">
+                <div className="welcome-illustration">
                   <MacMiniIllustration />
                 </div>
-                <div className="time-badge">⏱ Tar 3 minuter</div>
-                <h1>Konfigurera din <em>egna AI-agent</em></h1>
-                <p className="welcome-desc">
-                  Svara på några frågor om ditt företag, välj vilka agenter du vill ha
-                  och skicka in din ansökan. Anton återkopplar personligen om hur ni kan komma igång.
-                </p>
+                <div className="typing-intro">
+                  <TypingText text="Hej, jag heter Luna. Låt oss konfigurera din agent." speed={35} />
+                </div>
+                <h1>Konfigurera din <em>AI-medarbetare</em></h1>
+                <div className="welcome-bullets">
+                  <span className="welcome-bullet"><span className="bullet-check">✓</span> Tar bara 3 minuter</span>
+                  <span className="welcome-bullet"><span className="bullet-check">✓</span> Kostnadsfri rådgivning</span>
+                  <span className="welcome-bullet"><span className="bullet-check">✓</span> GDPR-säkert on-premise</span>
+                </div>
                 <button className="btn btn-primary btn-lg" onClick={next}>
-                  Börja konfigurera
+                  Kom igång
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
                 <div className="trust-badges">
@@ -597,6 +645,10 @@ export default function App() {
                   <span className="step-number">02</span>
                   <h2>Vad ska agenten göra?</h2>
                   <p className="subtitle">Välj det primära syftet. Du kan alltid lägga till mer senare.</p>
+                </div>
+                <div className="industry-hint">
+                  <span className="industry-hint-icon">💡</span>
+                  <p>{getIndustryHint(form.industry)}</p>
                 </div>
                 <div className="purpose-grid">
                   {PURPOSES.map(p => (
